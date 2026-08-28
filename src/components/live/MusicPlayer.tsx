@@ -12,9 +12,9 @@ import {
 } from 'lucide-react'
 import { fmt, TRACKS, useMusic } from './music-store'
 
-/** Glassmorphism music player with rotating album, live progress + equaliser. */
+/** Glassmorphism music player with rotating album, live progress + equaliser + real audio. */
 export function MusicPlayer() {
-  const { index, playing, progress, volume, toggle, next, prev, setVolume, tick } =
+  const { index, playing, progress, volume, muted, toggle, next, prev, setVolume, toggleMute, tick } =
     useMusic()
   const track = TRACKS[index]
   const last = useRef(performance.now())
@@ -36,8 +36,7 @@ export function MusicPlayer() {
 
   return (
     <div className="glass anim-enter relative overflow-hidden rounded-3xl p-4">
-      {/* sheen */}
-      <span className="anim-shimmer pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.5),transparent)]" />
+      <span className="anim-shimmer pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.55),transparent)]" />
 
       <div className="relative z-10 flex items-center gap-3">
         {/* rotating album */}
@@ -131,23 +130,23 @@ export function MusicPlayer() {
       {/* volume */}
       <div className="relative z-10 mt-3 flex items-center gap-2">
         <button
-          onClick={() => setVolume(volume > 0 ? 0 : 0.7)}
+          onClick={toggleMute}
           aria-label="mute"
           className="text-ink-soft transition hover:text-sakura"
         >
-          {volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
+          {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
         </button>
         <input
           type="range"
           min={0}
           max={1}
           step={0.01}
-          value={volume}
+          value={muted ? 0 : volume}
           onChange={(e) => setVolume(parseFloat(e.target.value))}
           aria-label="volume"
-          className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-pink-200/60 accent-pink-500"
+          className="h-1 flex-1 cursor-pointer appearance-none rounded-full accent-pink-500"
           style={{
-            background: `linear-gradient(90deg,#ec4899 ${volume * 100}%, rgba(252,205,230,0.6) ${volume * 100}%)`,
+            background: `linear-gradient(90deg,#ec4899 ${(muted ? 0 : volume) * 100}%, rgba(252,205,230,0.6) ${(muted ? 0 : volume) * 100}%)`,
           }}
         />
       </div>

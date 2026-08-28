@@ -1,25 +1,25 @@
 'use client'
 
-import { useState } from 'react'
 import { Flower2, Heart, Home, Image, Mail } from 'lucide-react'
+import { useView, type View } from './view-store'
 import { MusicPlayer } from './MusicPlayer'
 
-const NAV = [
+const NAV: { id: View; label: string; icon: typeof Home }[] = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'letters', label: 'Letters', icon: Mail },
   { id: 'photos', label: 'Photo Dump', icon: Image },
 ]
 
-/** Left column: brand, navigation, quote, and music player. */
+/** Left column: brand, navigation (switches the center stage), quote, music. */
 export function Sidebar() {
-  const [active, setActive] = useState('home')
+  const { view, setView } = useView()
 
   return (
     <aside className="anim-enter pointer-events-auto flex w-full flex-col gap-4">
       {/* brand */}
       <div className="glass-strong relative overflow-hidden rounded-3xl px-5 py-5 text-center">
-        <span className="anim-shimmer pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.55),transparent)]" />
-        <h1 className="font-script relative z-10 text-4xl font-bold leading-none text-sakura drop-shadow-sm">
+        <span className="anim-shimmer pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.6),transparent)]" />
+        <h1 className="glow-text font-script relative z-10 text-4xl font-bold leading-none text-sakura">
           For You
           <Heart className="anim-heartbeat ml-1 inline fill-pink-400 text-pink-400" size={20} />
         </h1>
@@ -31,18 +31,18 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* navigation */}
+      {/* navigation — switches the center stage view */}
       <nav className="flex flex-col gap-1.5">
         {NAV.map((item, i) => {
-          const isActive = active === item.id
+          const isActive = view === item.id
           const Icon = item.icon
           return (
             <button
               key={item.id}
-              onClick={() => setActive(item.id)}
+              onClick={() => setView(item.id)}
               className={`anim-enter group relative flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
                 isActive
-                  ? 'anim-nav glass text-sakura shadow-md'
+                  ? 'anim-nav glass-strong text-sakura shadow-md'
                   : 'glass text-ink/80 hover:text-sakura'
               }`}
               style={{ animationDelay: `${0.1 + i * 0.08}s` }}
@@ -58,7 +58,7 @@ export function Sidebar() {
               </span>
               <span className="flex-1 text-left">{item.label}</span>
               {isActive && (
-                <span className="h-1.5 w-1.5 rounded-full bg-pink-500 anim-twinkle" />
+                <span className="anim-twinkle h-1.5 w-1.5 rounded-full bg-pink-500" />
               )}
             </button>
           )

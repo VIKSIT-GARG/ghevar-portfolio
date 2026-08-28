@@ -38,3 +38,32 @@ Stage Summary:
 - Final verdict (VLM): "highly polished, aesthetically cohesive dashboard that successfully merges UI functionality with anime art styles."
 - All 9 generated images used (8 photo tiles + 1 album art) + clean couple bg.
 - Lint clean, dev server running, all interactions browser-verified.
+
+---
+Task ID: v2-overhaul
+Agent: main
+Task: Major overhaul — user reported buttons don't work, animations missing, sakura atmosphere lacking, doesn't capture the feel.
+
+Work Log:
+- Re-analyzed original image feel: intimate forehead-touch couple, off-center-left, warm pastel rose haze, volumetric glow from where foreheads touch, shallow DOF, soft-focus anime aesthetic.
+- Regenerated couple-bg-clean.png with a much more specific prompt (forehead-touch intimacy, warm pink luminescence, 45% frame height, Ghibli first-love mood).
+- Built real audio engine: Web Audio API AmbientEngine class generating a soft sustained chord (sine+triangle oscillators, lowpass filter, tremolo LFO, fade envelopes) per track — play/pause now produces actual sound. 3 tracks with different root frequencies/chords.
+- Built view store + CenterStage: navigation now ACTUALLY switches the main view — Home (welcome hero + stat cards that jump to views), Letters (full expandable list), Photo Dump (full gallery). Right panel hides on non-home views.
+- Made "View all" buttons work: LettersModal (full letters list) + photo lightbox with prev/next navigation, click-to-close backdrop, X button.
+- Amplified atmosphere: volumetric glow-pulse emanating from couple's center, 70 petals (up from 48), 38 bokeh orbs, vignette to draw eye to center, god rays, top sakura-branch vignette.
+- Amplified animations: glow-text on headers, sway (couple sways together), pop-in for modals, view-in transitions, letter-open animation, bob for floating chips, stronger shimmer/heartbeat.
+- Fixed ambiguous aria-labels (close -> close letters / close photo).
+- Lint clean. Agent-browser verified ALL interactions:
+  - Music: FAB play -> audio plays (AudioContext active), label flips pause; next/prev change tracks; volume slider; mute.
+  - Nav: Home/Letters/Photo Dump switch center stage views (verified via h2 + screenshot).
+  - Letters: expand/collapse with smooth grid-rows animation; "see all" jumps to Letters view.
+  - View all: opens modal with all 5 letters; closes via X.
+  - Photo lightbox: opens on click, prev/next navigate, X/backdrop closes.
+  - Like buttons: heartbeat animation.
+  - Mobile: vertical stack, no overflow, FAB positioned correctly.
+
+Stage Summary:
+- Buttons now DO things: nav switches views, view-all opens modals, photos open lightbox, music plays real sound.
+- VLM confirmed home/letters/photos/mobile all "clean, polished, cohesive romantic anime aesthetic."
+- Couple is the intimate centerpiece with volumetric glow emanating from their foreheads.
+- Sakura atmosphere dramatically stronger (70 petals + glow + vignette).

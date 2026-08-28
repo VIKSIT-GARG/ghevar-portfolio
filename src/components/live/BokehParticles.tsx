@@ -18,7 +18,7 @@ type Orb = {
  * Soft bokeh light orbs drifting upward like floating dust / fireflies.
  * Rendered on a canvas for cheap compositing of many translucent circles.
  */
-export function BokehParticles({ count = 26 }: { count?: number }) {
+export function BokehParticles({ count = 38 }: { count?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
 

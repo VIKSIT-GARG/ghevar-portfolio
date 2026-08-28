@@ -22,7 +22,7 @@ type Petal = {
  * - Reacts to a gentle wind that follows the pointer (parallax-like).
  * - Depth-based sizing + blur for a dreamy dof effect.
  */
-export function SakuraPetals({ count = 46 }: { count?: number }) {
+export function SakuraPetals({ count = 70 }: { count?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef<number>(0)
   const pointer = useRef({ x: 0, y: 0, tx: 0, ty: 0 })

@@ -22,7 +22,6 @@ export function FooterBar() {
         }`}
       >
         <Music2 size={22} className={playing ? 'anim-spin-slow' : ''} />
-        {/* spinning ring */}
         <span className="pointer-events-none absolute inset-0 rounded-full border-2 border-dashed border-white/60 [animation:spin-slow_8s_linear_infinite]" />
         <span className="sr-only">{track.title} — {playing ? 'pause' : 'play'}</span>
       </button>
