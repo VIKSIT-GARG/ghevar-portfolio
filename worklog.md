@@ -67,3 +67,28 @@ Stage Summary:
 - VLM confirmed home/letters/photos/mobile all "clean, polished, cohesive romantic anime aesthetic."
 - Couple is the intimate centerpiece with volumetric glow emanating from their foreheads.
 - Sakura atmosphere dramatically stronger (70 petals + glow + vignette).
+
+---
+Task ID: v3-gpu-shaders
+Agent: main
+Task: Use the user's uploaded image as background + add noticeable GPU-optimised sakura shaders (old canvas petals not noticeable).
+
+Work Log:
+- Copied user's uploaded image.png (anime couple under cherry blossom trees, golden hour, 1024x572 landscape) to public/couple-bg-user.png.
+- Rewrote BackgroundScene.tsx to use /couple-bg-user.png; centered the volumetric glow at 50%/46%; lightened colour-grade overlays so the user's image shines through.
+- Built SakuraShader.tsx — a TRUE GPU shader: single fullscreen quad, fragment shader computes 30 sakura petals entirely on the GPU (position from time+seed, sway, pointer-following wind, depth parallax, rotation, a 5-petal flower SDF with notch, soft fill + outer glow halo, warm pink-white gradient). Premultiplied over-blend. DPR capped at 1.5. Robust (no-ops if WebGL unavailable).
+- Rewrote BokehParticles.tsx as a second GPU shader: 18 drifting bokeh orbs + 2-octave value-noise atmosphere haze + top glow wash, additive. Same fullscreen-quad WebGL pipeline.
+- Removed old Canvas2D SakuraPetals.tsx (CPU, per-petal blur filters, barely visible).
+- Wired SakuraShader into page.tsx (z-20, above bg image z-0, below UI z-30).
+- Lint clean. Agent-browser verified:
+  - 2 WebGL canvases rendering at 1440x900, both gl=true.
+  - Zero console / shader compile errors.
+  - VLM: petals now "highly visible and noticeable — large, distinct, five-pointed flower-shaped graphics, scattered generously throughout the entire viewport, very strong and dominant atmosphere", UI still readable.
+  - Two-frame comparison (1.4s apart): VLM confirmed "MOVING — petals clearly shifted positions" (proves live GPU animation, not static).
+  - Mobile (390px): petals visible, couple visible, no overflow.
+  - Interactions intact: music plays (audio), nav switches to Photo Dump.
+
+Stage Summary:
+- Background = user's exact uploaded image.
+- Two real GPU fragment shaders render on top (sakura petals + light haze) — large, glowing, clearly noticeable, fully animated, one draw call each.
+- Old invisible canvas petals removed.
