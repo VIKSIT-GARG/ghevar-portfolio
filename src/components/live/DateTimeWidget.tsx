@@ -16,7 +16,7 @@ export function DateTimeWidget() {
   if (!now) {
     return (
       <div className="glass-pill flex items-center gap-3 rounded-2xl px-4 py-2.5">
-        <span className="font-script text-xl text-sakura">For You</span>
+        <span className="font-script text-xl text-sakura">From me to You</span>
       </div>
     )
   }

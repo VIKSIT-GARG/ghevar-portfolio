@@ -22,10 +22,10 @@ const zenMaru = Zen_Maru_Gothic({
 });
 
 export const metadata: Metadata = {
-  title: "For You ♡ — a little corner just for you",
+  title: "From me to You ♡ — a little corner just for you",
   description:
     "A dreamy, animated personal corner — sakura petals, soft music, and little letters made with love.",
-  keywords: ["For You", "anime", "sakura", "dashboard", "personal"],
+  keywords: ["From me to You", "anime", "sakura", "dashboard", "personal"],
   authors: [{ name: "made with love" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",

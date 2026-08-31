@@ -21,7 +21,7 @@ uniform float uDPR;
 
 float h1(float n){ return fract(sin(n)*43758.5453123); }
 
-// smooth value noise (cheap)
+// Smooth value noise
 float vnoise(vec2 p){
   vec2 i = floor(p); vec2 f = fract(p);
   float a = h1(i.x*12.1 + i.y*3.7);
@@ -38,42 +38,67 @@ void main() {
 
   vec3 col = vec3(0.0);
 
-  // soft animated haze (two octaves)
-  float n1 = vnoise(px*0.004 + vec2(uTime*0.02, -uTime*0.015));
-  float n2 = vnoise(px*0.011 - vec2(uTime*0.01, uTime*0.02));
-  float haze = n1*0.6 + n2*0.4;
-  col += vec3(1.0, 0.82, 0.90) * haze * 0.10;
+  // 1. Soft Komorebi (Dappled Sunlight Rays through Cherry Canopy)
+  vec2 rayCoord = px / uRes;
+  float rayAngle = rayCoord.x * 0.8 + rayCoord.y * 0.4;
+  float rayNoise = sin(rayAngle * 18.0 - uTime * 0.35) * 0.5 + 0.5;
+  float rayNoise2 = sin(rayAngle * 34.0 + uTime * 0.2) * 0.5 + 0.5;
+  float rays = pow(rayNoise * 0.65 + rayNoise2 * 0.35, 2.5);
+  float topVignette = smoothstep(uRes.y * 0.95, uRes.y * 0.1, px.y);
+  col += vec3(1.0, 0.88, 0.82) * rays * topVignette * 0.08;
 
-  // drifting bokeh orbs (additive)
-  const int N = 18;
+  // 2. Soft atmospheric ambient pink haze
+  float n1 = vnoise(px * 0.003 + vec2(uTime * 0.015, -uTime * 0.01));
+  float haze = n1 * 0.6 + 0.4;
+  col += vec3(1.0, 0.76, 0.86) * haze * 0.06;
+
+  // 3. Golden-pink micro pollen / dust motes catching sunlight (32 particles)
+  const int M = 28;
+  for (int j = 0; j < M; j++) {
+    float fj = float(j);
+    float sj1 = h1(fj * 2.39 + 0.31);
+    float sj2 = h1(fj * 4.19 + 1.17);
+    float sj3 = h1(fj * 1.83 + 5.72);
+
+    float moteR = mix(1.2, 3.2, sj1) * uDPR;
+    float moteBaseX = h1(fj * 6.7 + 1.3) * uRes.x;
+    float moteSpeedY = mix(12.0, 32.0, sj2);
+    float moteSpeedX = mix(14.0, 36.0, sj3);
+
+    float my = mod(h1(fj * 9.3) * uRes.y + uTime * moteSpeedY, uRes.y + 40.0) - 20.0;
+    float mx = mod(moteBaseX + uTime * moteSpeedX + sin(uTime * 1.2 + fj * 1.5) * 25.0 + uWind.x * 35.0, uRes.x + 40.0) - 20.0;
+
+    float md = length(px - vec2(mx, my));
+    float mote = exp(-(md * md) / (moteR * moteR * 1.8));
+    float mTwinkle = 0.5 + 0.5 * sin(uTime * (1.5 + sj2 * 2.5) + fj * 4.0);
+
+    vec3 mCol = mix(vec3(1.0, 0.94, 0.80), vec3(1.0, 0.72, 0.88), sj1);
+    col += mCol * mote * mTwinkle * 0.35;
+  }
+
+  // 4. Drifting warm soft bokeh orbs (16 orbs)
+  const int N = 16;
   for (int i = 0; i < N; i++) {
     float fi = float(i);
-    float s1 = h1(fi*1.71 + 0.5);
-    float s2 = h1(fi*3.13 + 1.9);
-    float s3 = h1(fi*0.77 + 4.2);
+    float s1 = h1(fi * 1.71 + 0.5);
+    float s2 = h1(fi * 3.13 + 1.9);
+    float s3 = h1(fi * 0.77 + 4.2);
 
-    float r = mix(26.0, 95.0, s1) * uDPR;
-    float baseX = h1(fi*5.9+2.1) * uRes.x;
-    // drift upward slowly, wrap
-    float speed = mix(6.0, 20.0, s2);
-    float yoff = mod(h1(fi*8.1)*uRes.y + uTime*speed, uRes.y + r*4.0) - r*2.0;
-    float xoff = baseX + sin(uTime*0.3 + fi*2.0) * (30.0 + 40.0*s3) + uWind.x * (40.0*s3);
+    float r = mix(24.0, 85.0, s1) * uDPR;
+    float baseX = h1(fi * 5.9 + 2.1) * uRes.x;
+    float speed = mix(8.0, 22.0, s2);
+    float yoff = mod(h1(fi * 8.1) * uRes.y + uTime * speed, uRes.y + r * 4.0) - r * 2.0;
+    float xoff = baseX + sin(uTime * 0.25 + fi * 2.0) * (25.0 + 35.0 * s3) + uWind.x * (35.0 * s3);
 
     vec2 c = vec2(xoff, yoff);
     float d = length(px - c);
-    // gaussian-ish orb
-    float orb = exp(-(d*d) / (r*r*0.6));
-    // twinkle
-    float tw = 0.55 + 0.45*sin(uTime*(0.8+s2*1.5) + fi*3.0);
-    vec3 oc = mix(vec3(1.0,0.92,0.96), vec3(1.0,0.74,0.86), s2);
-    col += oc * orb * tw * 0.22;
+    float orb = exp(-(d * d) / (r * r * 0.55));
+    float tw = 0.5 + 0.5 * sin(uTime * (0.7 + s2 * 1.2) + fi * 3.0);
+    vec3 oc = mix(vec3(1.0, 0.94, 0.96), vec3(1.0, 0.72, 0.84), s2);
+    col += oc * orb * tw * 0.16;
   }
 
-  // gentle top glow wash
-  float topG = smoothstep(uRes.y, uRes.y*0.2, px.y);
-  col += vec3(1.0, 0.78, 0.88) * topG * 0.05;
-
-  float a = clamp(max(max(col.r, col.g), col.b), 0.0, 0.85);
+  float a = clamp(max(max(col.r, col.g), col.b), 0.0, 0.75);
   gl_FragColor = vec4(col, a);
 }
 `

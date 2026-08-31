@@ -20,7 +20,7 @@ export function Sidebar() {
       <div className="glass-strong relative overflow-hidden rounded-3xl px-5 py-5 text-center">
         <span className="anim-shimmer pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,transparent,rgba(255,255,255,0.6),transparent)]" />
         <h1 className="glow-text font-script relative z-10 text-4xl font-bold leading-none text-sakura">
-          For You
+          From me to You
           <Heart className="anim-heartbeat ml-1 inline fill-pink-400 text-pink-400" size={20} />
         </h1>
         <p className="relative z-10 mt-1.5 text-[11px] lowercase tracking-wide text-ink-soft">
