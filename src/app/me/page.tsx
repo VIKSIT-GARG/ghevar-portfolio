@@ -1,5 +1,7 @@
 "use client";
 
+import "./portfolio.css";
+
 import { useMemo, useState } from "react";
 import {
   ArrowDownRight, ArrowUpRight, ArrowRight, Github, Linkedin, Mail, ExternalLink,
